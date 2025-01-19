@@ -1,6 +1,7 @@
 package com.mobilechallengue_uala
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,37 +12,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobilechallengue_uala.ui.screen.CitiesListScreen
+import com.mobilechallengue_uala.ui.screen.CitiesViewModel
+import com.mobilechallengue_uala.ui.screen.NavigationGraph
 import com.mobilechallengue_uala.ui.theme.MobileChallengueUalaTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
-            MobileChallengueUalaTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            val viewModel: CitiesViewModel = CitiesViewModel(context = this)
+            NavigationGraph(viewModel = viewModel)
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MobileChallengueUalaTheme {
-        Greeting("Android")
     }
 }
