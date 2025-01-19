@@ -67,7 +67,7 @@ fun CityListAndMap(
 
     if (isPortrait) {
         // Modo vertical
-        val navController = rememberNavCocdntroller()
+        val navController = rememberNavController()
         NavHost(navController = navController, startDestination = "cityList") {
             composable("cityList") {
                 CitiesListScreen(
