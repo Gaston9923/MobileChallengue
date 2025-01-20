@@ -1,5 +1,6 @@
 package com.mobilechallengue_uala.ui.screen
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Color
 import androidx.compose.foundation.clickable
@@ -55,6 +56,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.mobilechallengue_uala.data.model.City
 import com.mobilechallengue_uala.data.model.Coordinates
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun CityListAndMap(
     viewModel: CitiesViewModel,
@@ -79,7 +81,6 @@ fun CityListAndMap(
                             navController.navigate("cityMap")
                         },
                         onOpenDetails = { city ->
-                            // Navegar a la pantalla de detalles de la ciudad
                             onOpenDetails(city)
                         }
                     )
@@ -203,7 +204,7 @@ fun SearchBar(
         onValueChange = onSearchTextChanged,
         label = { Text("Buscar ciudades") },
         modifier = modifier
-            .fillMaxWidth() // Asegúrate de que el ancho sea ajustable
+            .fillMaxWidth()
             .padding(8.dp),
         singleLine = true
     )

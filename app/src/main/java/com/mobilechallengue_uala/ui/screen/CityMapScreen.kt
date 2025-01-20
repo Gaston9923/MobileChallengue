@@ -18,32 +18,29 @@ fun CityMapScreen(
     city: City,
     modifier: Modifier = Modifier
 ) {
-    // Estado para manejar la posición de la cámara
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
             LatLng(city.coord.lat, city.coord.lon),
-            10f // Nivel de zoom inicial
+            10f
         )
     }
 
-    // Efecto que reacciona al cambio de la ciudad seleccionada
     LaunchedEffect(city) {
         cameraPositionState.animate(
             update = CameraUpdateFactory.newLatLngZoom(
                 LatLng(city.coord.lat, city.coord.lon),
-                10f // Zoom deseado
+                10f // Zoom
             ),
-            durationMs = 850 // Duración de la animación en milisegundos
+            durationMs = 850 // animación
         )
     }
 
-    // Contenido del mapa
     GoogleMap(
         modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
     ) {
-        // Marcador para la ciudad seleccionada
-        Marker(
+
+        Marker( // Marcador
             state = MarkerState(
                 position = LatLng(city.coord.lat, city.coord.lon)
             ),

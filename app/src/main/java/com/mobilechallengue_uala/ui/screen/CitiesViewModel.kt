@@ -73,11 +73,9 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
                 _allCities.value = _allCities.value.map { existingCity ->
                     if (existingCity._id == city._id) updatedCity else existingCity
                 }
-//                _filteredCities.value = _filteredCities.value.map { existingCity ->
-//                    if (existingCity._id == updatedCity._id) updatedCity else existingCity
-//                }
 
-                // Guarda los IDs de las ciudades favoritas
+
+                // Guarda ciudades favoritas
                 saveFavoriteCityIdsToPreferences()
 
                 // Actualiza la lista filtrada

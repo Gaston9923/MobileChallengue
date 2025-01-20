@@ -16,10 +16,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,7 +28,6 @@ fun CityItem(
     onFavoriteToggle: (City) -> Unit,
     onOpenDetails: (City) -> Unit
 ) {
-    var isFavorite by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -42,14 +37,13 @@ fun CityItem(
         elevation = 4.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Título
-            Text(
+
+            Text( // Título
                 text = "${city.name}, ${city.country}",
                 style = MaterialTheme.typography.h6
             )
 
-            // Subtítulo
-            Text(
+            Text( // Subtítulo
                 text = "Lat: ${city.coord.lat}, Lon: ${city.coord.lon}",
                 style = MaterialTheme.typography.body2
             )
