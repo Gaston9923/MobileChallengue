@@ -1,15 +1,15 @@
 package com.mobilechallengue_uala.ui.screen
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilechallengue_uala.data.RetrofitClient
 import com.mobilechallengue_uala.data.model.City
+import com.mobilechallengue_uala.ui.components.PreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class CitiesViewModel(private val context: Context) : ViewModel() {
+class CitiesViewModel(private val preferencesRepository: PreferencesRepository) : ViewModel() {
     private val _allCities = MutableStateFlow<List<City>>(emptyList())
     private val _filteredCities = MutableStateFlow<List<City>>(emptyList())
     val filteredCities: StateFlow<List<City>> = _filteredCities
@@ -20,7 +20,7 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
     val selectedCity: StateFlow<City?> = _selectedCity
 
     init {
-        getCities()
+        getCities()cd 
     }
 
     fun selectCity(city: City?) {
@@ -52,8 +52,7 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
     }
 
     private fun loadFavoriteCityIdsFromPreferences(): Set<String> {
-        val sharedPrefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        return sharedPrefs.getStringSet("favorite_city_ids", emptySet()) ?: emptySet()
+        return preferencesRepository.loadFavoriteCityIds()
     }
 
     fun filterCities(searchText: String, showFavoritesOnly: Boolean) {
@@ -73,7 +72,6 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
                     if (existingCity._id == city._id) updatedCity else existingCity
                 }
                 saveFavoriteCityIdsToPreferences()
-
                 filterCities("", false)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -83,11 +81,7 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
 
     private fun saveFavoriteCityIdsToPreferences() {
         val favoriteCityIds = _allCities.value.filter { it.isFavorite }.map { it._id.toString() }.toSet()
-        val sharedPrefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        with(sharedPrefs.edit()) {
-            putStringSet("favorite_city_ids", favoriteCityIds)
-            apply()
-        }
+        preferencesRepository.saveFavoriteCityIds(favoriteCityIds)
     }
 }
 

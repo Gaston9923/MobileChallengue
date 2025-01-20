@@ -1,6 +1,5 @@
 package com.mobilechallengue_uala.ui.components
 
-import android.graphics.Color
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,12 +8,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mobilechallengue_uala.ui.theme.Blue
-import com.mobilechallengue_uala.ui.theme.Coral
 import com.mobilechallengue_uala.ui.theme.LightBlue
 import com.mobilechallengue_uala.ui.theme.White
 
@@ -42,7 +39,7 @@ fun SearchBar(
         leadingIcon = icon,
         label = { Text("Buscar ciudades") },
         colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = backgroundColor,  // Fondo blanco
+            backgroundColor = backgroundColor,
             focusedLabelColor = textColor,
             focusedIndicatorColor = borderColor,
             unfocusedIndicatorColor = borderColor.copy(alpha = 0.6f),
@@ -50,7 +47,7 @@ fun SearchBar(
             textColor = textColor,
             placeholderColor = placeholderColor
         ),
-        shape = MaterialTheme.shapes.medium, // Forma predeterminada para el borde redondeado
+        shape = MaterialTheme.shapes.medium,
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
