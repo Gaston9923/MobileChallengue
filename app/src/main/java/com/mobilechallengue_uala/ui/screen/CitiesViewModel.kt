@@ -20,7 +20,7 @@ class CitiesViewModel(private val preferencesRepository: PreferencesRepository) 
     val selectedCity: StateFlow<City?> = _selectedCity
 
     init {
-        getCities()cd 
+        getCities()
     }
 
     fun selectCity(city: City?) {
