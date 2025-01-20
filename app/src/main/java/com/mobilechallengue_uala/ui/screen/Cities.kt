@@ -1,23 +1,19 @@
 package com.mobilechallengue_uala.ui.screen
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.res.Configuration
 import android.graphics.Color
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -27,10 +23,8 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,22 +33,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
 import com.mobilechallengue_uala.data.model.City
 import com.mobilechallengue_uala.data.model.Coordinates
+import com.mobilechallengue_uala.ui.components.CustomTopBar
+import com.mobilechallengue_uala.ui.components.SearchBar
+import com.mobilechallengue_uala.ui.theme.Coral
+import com.mobilechallengue_uala.ui.theme.LightBlue
+import com.mobilechallengue_uala.ui.theme.White
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -65,7 +59,6 @@ fun CityListAndMap(
 ) {
     val cities by viewModel.filteredCities.collectAsState()
     val selectedCity by viewModel.selectedCity.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
 
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -86,7 +79,10 @@ fun CityListAndMap(
                     )
                 }
                 composable("cityMap") {
-                    CityMapScreen(city = selectedCity ?: cities.first())
+                    CityMapScreen(
+                        city = selectedCity ?: cities.first(),
+                        onBackPressed = { navController.popBackStack() }
+                    )
                 }
             }
         } else { // Modo horizontal
@@ -100,7 +96,13 @@ fun CityListAndMap(
                 )
                 CityMapScreen(
                     city = selectedCity ?: cities.first(),
-                    modifier = Modifier.weight(1.2f) // Ocupa la mitad del espacio horizontal
+                    modifier = Modifier.weight(1.2f),
+                    onBackPressed = {
+                        val context = LocalContext
+                        if (context is Activity) {
+                            context.finish()
+                        }
+                    }
                 )
             }
         }
@@ -121,15 +123,7 @@ fun CitiesListScreen(
     var showOnlyFavorites by remember { mutableStateOf(showFavoritesOnly) }
 
     Column(modifier = modifier.fillMaxSize()) {
-
-        Text( // Título
-            text = "Listado de Ciudades",
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            textAlign = TextAlign.Center
-        )
+        CustomTopBar("Mobile Challengue")
 
         Row( // Barra de búsqueda y botón de favoritos
             verticalAlignment = Alignment.CenterVertically,
@@ -159,7 +153,7 @@ fun CitiesListScreen(
                 Icon(
                     imageVector = if (showOnlyFavorites) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = if (showOnlyFavorites) "Mostrar todas" else "Mostrar favoritos",
-                    tint = if (showOnlyFavorites) MaterialTheme.colors.error else MaterialTheme.colors.onSurface
+                    tint = if (showOnlyFavorites) Coral else MaterialTheme.colors.onSurface
                 )
             }
         }
@@ -170,7 +164,9 @@ fun CitiesListScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = LightBlue
+                )
             }
         } else {
             // Lista de ciudades
@@ -189,25 +185,6 @@ fun CitiesListScreen(
             }
         }
     }
-}
-
-
-
-@Composable
-fun SearchBar(
-    searchText: String,
-    onSearchTextChanged: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TextField(
-        value = searchText,
-        onValueChange = onSearchTextChanged,
-        label = { Text("Buscar ciudades") },
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        singleLine = true
-    )
 }
 
 
@@ -247,11 +224,14 @@ fun NavigationGraph(viewModel: CitiesViewModel) {
             val city = City(
                 name = name,
                 country = country,
-                _id = id, // No es necesario para el mapa
+                _id = id,
                 coord = Coordinates(lat.toDouble(), lon.toDouble())
             )
 
-            CityMapScreen(city = city)
+            CityMapScreen(
+                city = city,
+                onBackPressed = { navController.popBackStack() }
+            )
         }
 
         // Pantalla de detalles
@@ -272,7 +252,7 @@ fun NavigationGraph(viewModel: CitiesViewModel) {
             val city = City(
                 name = name,
                 country = country,
-                _id = id, // No relevante aquí
+                _id = id,
                 coord = Coordinates(lat.toDouble(), lon.toDouble())
             )
 

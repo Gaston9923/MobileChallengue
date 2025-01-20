@@ -20,6 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mobilechallengue_uala.data.model.City
+import com.mobilechallengue_uala.ui.theme.Blue
+import com.mobilechallengue_uala.ui.theme.Coral
+import com.mobilechallengue_uala.ui.theme.LightBlue
 
 @Composable
 fun CityItem(
@@ -40,7 +43,8 @@ fun CityItem(
 
             Text( // Título
                 text = "${city.name}, ${city.country}",
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6,
+                color = Blue
             )
 
             Text( // Subtítulo
@@ -59,14 +63,15 @@ fun CityItem(
                     Icon(
                         imageVector = if (city.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = if (city.isFavorite) "Desmarcar como favorito" else "Marcar como favorito",
-                        tint = if (city.isFavorite) MaterialTheme.colors.error else MaterialTheme.colors.onSurface
+                        tint = if (city.isFavorite) Coral else MaterialTheme.colors.onSurface
                     )
                 }
 
                 IconButton(onClick = { onOpenDetails(city) }) {
                     Icon(
                         imageVector = Icons.Default.Info,
-                        contentDescription = "Detalles"
+                        contentDescription = "Detalles",
+                        tint = LightBlue
                     )
                 }
             }
