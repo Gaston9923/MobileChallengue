@@ -13,12 +13,22 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
     private val _allCities = MutableStateFlow<List<City>>(emptyList())
     private val _filteredCities = MutableStateFlow<List<City>>(emptyList())
     val filteredCities: StateFlow<List<City>> = _filteredCities
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _selectedCity = MutableStateFlow<City?>(null)
+    val selectedCity: StateFlow<City?> = _selectedCity
 
     init {
         getCities()
     }
 
+    fun selectCity(city: City?) {
+        _selectedCity.value = city
+    }
+
     private fun getCities() {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val citiesList = RetrofitClient.apiService.getCities()
@@ -35,6 +45,8 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
                 _filteredCities.value = _allCities.value
             } catch (e: Exception) {
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
@@ -61,6 +73,9 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
                 _allCities.value = _allCities.value.map { existingCity ->
                     if (existingCity._id == city._id) updatedCity else existingCity
                 }
+//                _filteredCities.value = _filteredCities.value.map { existingCity ->
+//                    if (existingCity._id == updatedCity._id) updatedCity else existingCity
+//                }
 
                 // Guarda los IDs de las ciudades favoritas
                 saveFavoriteCityIdsToPreferences()

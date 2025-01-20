@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -60,48 +62,48 @@ fun CityListAndMap(
     onOpenDetails: (City) -> Unit
 ) {
     val cities by viewModel.filteredCities.collectAsState()
-    var selectedCity by remember { mutableStateOf<City?>(null) }
+    val selectedCity by viewModel.selectedCity.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-    if (isPortrait) {
-        // Modo vertical
-        val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = "cityList") {
-            composable("cityList") {
+        if (isPortrait) { // Modo vertical
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "cityList") {
+                composable("cityList") {
+                    CitiesListScreen(
+                        viewModel = viewModel,
+                        onCitySelected = { city ->
+                            viewModel.selectCity(city)
+                            navController.navigate("cityMap")
+                        },
+                        onOpenDetails = { city ->
+                            // Navegar a la pantalla de detalles de la ciudad
+                            onOpenDetails(city)
+                        }
+                    )
+                }
+                composable("cityMap") {
+                    CityMapScreen(city = selectedCity ?: cities.first())
+                }
+            }
+        } else { // Modo horizontal
+            Row(modifier = Modifier.fillMaxSize()) {
                 CitiesListScreen(
                     viewModel = viewModel,
                     onCitySelected = { city ->
-                        selectedCity = city
-                        navController.navigate("cityMap")
-                    },
-                    onOpenDetails = { city ->
-                        // Navegar a la pantalla de detalles de la ciudad
-                        onOpenDetails(city)
-                    }
+                        viewModel.selectCity(city) },
+                    onOpenDetails = onOpenDetails,
+                    modifier = Modifier.weight(0.8f) // Ocupa la mitad del espacio horizontal
+                )
+                CityMapScreen(
+                    city = selectedCity ?: cities.first(),
+                    modifier = Modifier.weight(1.2f) // Ocupa la mitad del espacio horizontal
                 )
             }
-            composable("cityMap") {
-                // Mostrar la pantalla del mapa con la ciudad seleccionada
-                CityMapScreen(city = selectedCity ?: cities.first())
-            }
         }
-    } else {
-        // Modo horizontal
-        Row(modifier = Modifier.fillMaxSize()) {
-            CitiesListScreen(
-                viewModel = viewModel,
-                onCitySelected = { city -> selectedCity = city },
-                onOpenDetails = onOpenDetails,
-                modifier = Modifier.weight(0.8f) // Ocupa la mitad del espacio horizontal
-            )
-            CityMapScreen(
-                city = selectedCity ?: cities.first(),
-                modifier = Modifier.weight(1.2f) // Ocupa la mitad del espacio horizontal
-            )
-        }
-    }
+
 }
 
 @Composable
@@ -113,6 +115,7 @@ fun CitiesListScreen(
     showFavoritesOnly: Boolean = false
 ) {
     val cities by viewModel.filteredCities.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var searchText by remember { mutableStateOf("") }
     var showOnlyFavorites by remember { mutableStateOf(showFavoritesOnly) }
 
@@ -126,7 +129,6 @@ fun CitiesListScreen(
                 .padding(16.dp),
             textAlign = TextAlign.Center
         )
-
 
         Row( // Barra de búsqueda y botón de favoritos
             verticalAlignment = Alignment.CenterVertically,
@@ -161,18 +163,28 @@ fun CitiesListScreen(
             }
         }
 
-        // Lista de ciudades
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(cities) { city ->
-                CityItem(
-                    city = city,
-                    onCitySelected = onCitySelected,
-                    onFavoriteToggle = { selectedCity ->
-                        viewModel.setFavorite(selectedCity)
-                        viewModel.filterCities(searchText, showOnlyFavorites)
-                    },
-                    onOpenDetails = onOpenDetails
-                )
+        if (isLoading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            // Lista de ciudades
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(cities) { city ->
+                    CityItem(
+                        city = city,
+                        onCitySelected = onCitySelected,
+                        onFavoriteToggle = { selectedCity ->
+                            viewModel.setFavorite(selectedCity)
+                            viewModel.filterCities(searchText, showOnlyFavorites)
+                        },
+                        onOpenDetails = onOpenDetails
+                    )
+                }
             }
         }
     }
