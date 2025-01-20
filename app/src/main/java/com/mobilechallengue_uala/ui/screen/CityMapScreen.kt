@@ -39,7 +39,7 @@ fun CityMapScreen(
                 LatLng(city.coord.lat, city.coord.lon),
                 10f // Zoom
             ),
-            durationMs = 850 // animación
+            durationMs = 850
         )
     }
 

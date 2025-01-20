@@ -25,7 +25,7 @@ fun CustomTopBar(text : String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp) // Ajusta la altura según tu diseño
+            .height(100.dp)
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val width = size.width
@@ -41,7 +41,7 @@ fun CustomTopBar(text : String) {
                     )
                     close()
                 },
-                color = Color(0xFF003B95) // Color azul (reemplaza con el que necesites)
+                color = Color(0xFF003B95)
             )
         }
         Text( // Título

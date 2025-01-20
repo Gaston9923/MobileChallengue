@@ -38,8 +38,8 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
                     city.copy(isFavorite = favoriteCityIds.contains(city._id.toString()))
                 }.sortedWith(
                     compareBy(
-                        { it.name.lowercase() }, // Ordenar por nombre de la ciudad
-                        { it.country.lowercase() } // Si los nombres son iguales, ordenar por código del país
+                        { it.name.lowercase() },
+                        { it.country.lowercase() }
                     )
                 )
                 _filteredCities.value = _allCities.value
@@ -69,16 +69,11 @@ class CitiesViewModel(private val context: Context) : ViewModel() {
         viewModelScope.launch {
             try {
                 val updatedCity = city.copy(isFavorite = !city.isFavorite)
-
                 _allCities.value = _allCities.value.map { existingCity ->
                     if (existingCity._id == city._id) updatedCity else existingCity
                 }
-
-
-                // Guarda ciudades favoritas
                 saveFavoriteCityIdsToPreferences()
 
-                // Actualiza la lista filtrada
                 filterCities("", false)
             } catch (e: Exception) {
                 e.printStackTrace()
