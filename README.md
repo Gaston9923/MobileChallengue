@@ -1,5 +1,5 @@
 
-# Mobile Challenge - Ualá - README
+# Mobile Challenge - README
 
 Esta aplicación permite buscar y visualizar ciudades desde un archivo JSON de más de 200k entradas. Los usuarios pueden:
 - Filtrar ciudades por prefijo.
